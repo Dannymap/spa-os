@@ -1,0 +1,17 @@
+{
+  "name": "mvp-nails-platform",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace @nails/web",
+    "dev:api": "npm run dev --workspace @nails/api",
+    "dev:mobile": "npm run start --workspace @nails/mobile",
+    "build:web": "npm run build --workspace @nails/web",
+    "build:api": "npm run build --workspace @nails/api"
+  }
+}
+

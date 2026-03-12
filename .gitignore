@@ -1,0 +1,16 @@
+node_modules
+.next
+dist
+build
+.expo
+.expo-shared
+coverage
+*.log
+.DS_Store
+.env
+.env.local
+.env.*.local
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+

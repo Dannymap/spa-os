@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "NailsOS Mobile",
+    "slug": "nailsos-mobile",
+    "scheme": "nailsos",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#f6efe6"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
+
