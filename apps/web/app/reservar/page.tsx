@@ -59,11 +59,16 @@ export default function ReservarPage() {
         <div style={{ background: "var(--color-card)", borderRadius: 24, padding: "48px 40px", textAlign: "center", maxWidth: 440, boxShadow: "0 4px 24px rgba(0,0,0,0.1)" }}>
           <div style={{ fontSize: 56, marginBottom: 16 }}>🎉</div>
           <h2 style={{ color: "var(--color-accent)", marginBottom: 8 }}>¡Cita confirmada!</h2>
-          <p style={{ color: "#888", marginBottom: 24 }}>Hola <strong>{form.name}</strong>, tu cita para <strong>{selected?.name}</strong> ha sido registrada. Te contactaremos por WhatsApp para confirmar.</p>
-          <button onClick={() => { setSubmitted(false); setStep(0); setSelected(null); setForm({ name: "", phone: "", email: "", notes: "" }); }}
-            style={{ background: "var(--color-accent)", color: "#fff", border: "none", borderRadius: 14, padding: "12px 28px", fontWeight: 700, cursor: "pointer", fontSize: 15 }}>
-            Hacer otra reserva
-          </button>
+          <p style={{ color: "#888", marginBottom: 28 }}>Hola <strong>{form.name}</strong>, tu cita para <strong>{selected?.name}</strong> ha sido registrada. Te contactaremos por WhatsApp para confirmar.</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <button onClick={() => { setSubmitted(false); setStep(0); setSelected(null); setForm({ name: "", phone: "", email: "", notes: "" }); }}
+              style={{ background: "var(--color-accent)", color: "#fff", border: "none", borderRadius: 14, padding: "12px 28px", fontWeight: 700, cursor: "pointer", fontSize: 15 }}>
+              Hacer otra reserva
+            </button>
+            <a href="/" style={{ background: "transparent", border: "1.5px solid #e0d5cc", borderRadius: 14, padding: "12px 28px", fontWeight: 600, fontSize: 15, textDecoration: "none", color: "var(--color-text)", display: "block" }}>
+              ← Ir al inicio
+            </a>
+          </div>
         </div>
       </div>
     );
@@ -72,10 +77,14 @@ export default function ReservarPage() {
   return (
     <div style={{ minHeight: "100vh", background: "var(--color-bg)", fontFamily: "Georgia, serif", padding: "40px 20px" }}>
       <div style={{ maxWidth: 680, margin: "0 auto" }}>
-        {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: 36 }}>
-          <h1 style={{ color: "var(--color-accent)", fontSize: 32, marginBottom: 8 }}>Reserva tu cita</h1>
-          <p style={{ color: "#888", fontSize: 16 }}>Elige tu servicio y te contactamos para confirmar</p>
+        {/* Barra superior con enlace a inicio */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 36 }}>
+          <a href="/" style={{ color: "var(--color-accent)", fontWeight: 600, textDecoration: "none", fontSize: 15 }}>← Inicio</a>
+          <div style={{ textAlign: "center", flex: 1 }}>
+            <h1 style={{ color: "var(--color-accent)", fontSize: 32, margin: 0 }}>Reserva tu cita</h1>
+            <p style={{ color: "#888", fontSize: 15, margin: "6px 0 0" }}>Elige tu servicio y te contactamos para confirmar</p>
+          </div>
+          <div style={{ width: 60 }} />
         </div>
 
         {/* Steps */}
