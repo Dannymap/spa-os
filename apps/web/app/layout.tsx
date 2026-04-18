@@ -2,8 +2,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "NailsOS",
-  description: "Agenda, reservas y gestion de clientas para salones de unas."
+  title: "SpaOS — Tu spa de manos, pies y más",
+  description: "Reserva citas online, gestiona fichas de clientas y controla tus finanzas.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

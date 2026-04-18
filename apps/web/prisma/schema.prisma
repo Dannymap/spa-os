@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model Service {
+  id              String    @id @default(cuid())
+  name            String
+  category        String    // manos, pies, cejas, pestanas, depilacion, otros
+  durationMinutes Int
+  price           Float
+  description     String?
+  active          Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  bookings        Booking[]
+}
+
+model Client {
+  id               String        @id @default(cuid())
+  name             String
+  phone            String?
+  email            String?
+  isVip            Boolean       @default(false)
+  allergies        String?
+  notes            String?
+  birthdate        DateTime?
+  preferredShape   String?
+  preferredLength  String?
+  favoriteColors   String[]
+  photoUrl         String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  bookings         Booking[]
+  photos           ClientPhoto[]
+}
+
+model ClientPhoto {
+  id          String   @id @default(cuid())
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  bookingId   String?
+  booking     Booking? @relation(fields: [bookingId], references: [id])
+  url         String
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+model Booking {
+  id        String        @id @default(cuid())
+  clientId  String
+  client    Client        @relation(fields: [clientId], references: [id])
+  serviceId String
+  service   Service       @relation(fields: [serviceId], references: [id])
+  date      DateTime
+  status    String        @default("prevista") // prevista, en_curso, completada, cancelada, no_show
+  notes     String?
+  price     Float
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  photos    ClientPhoto[]
+  income    Income?
+}
+
+model Income {
+  id        String   @id @default(cuid())
+  bookingId String?  @unique
+  booking   Booking? @relation(fields: [bookingId], references: [id])
+  amount    Float
+  method    String   @default("efectivo") // efectivo, tarjeta, transferencia
+  date      DateTime @default(now())
+  description String?
+  createdAt DateTime @default(now())
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  category    String   // productos, alquiler, servicios, equipo, publicidad, otros
+  description String
+  amount      Float
+  date        DateTime @default(now())
+  receiptUrl  String?
+  createdAt   DateTime @default(now())
+}

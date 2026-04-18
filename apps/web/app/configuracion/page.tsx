@@ -1,4 +1,4 @@
-import { DashboardShell } from "../../components/layout/dashboard-shell";
+import DashboardShell from "../../components/layout/dashboard-shell";
 import { ServiceCatalog } from "../../components/services/service-catalog";
 import { getServices } from "../../lib/api";
 

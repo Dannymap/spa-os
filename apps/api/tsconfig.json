@@ -5,7 +5,10 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "incremental": true,
+    "esModuleInterop": true,
+    "isolatedModules": true
   },
   "include": [
     "**/*.ts",
@@ -16,4 +19,3 @@
     "node_modules"
   ]
 }
-
