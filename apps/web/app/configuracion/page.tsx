@@ -1,6 +1,7 @@
 import DashboardShell from "../../components/layout/dashboard-shell";
 import { ServicesManager } from "../../components/services/services-manager";
 import { ScheduleConfig } from "../../components/services/schedule-config";
+import { DayOverrides } from "../../components/services/day-overrides";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export default async function ConfigPage() {
       activePath="/configuracion"
     >
       <ScheduleConfig />
+      <DayOverrides />
       <ServicesManager initialServices={services} />
     </DashboardShell>
   );

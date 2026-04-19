@@ -77,6 +77,12 @@ model Income {
   createdAt DateTime @default(now())
 }
 
+model DayOverride {
+  id    String   @id @default(cuid())
+  date  String   @unique // "2026-04-20"
+  slots String[] // ["10:00", "12:00"]
+}
+
 model WorkSchedule {
   id        String  @id @default(cuid())
   dayOfWeek Int     @unique // 0=Dom, 1=Lun, 2=Mar, 3=Mié, 4=Jue, 5=Vie, 6=Sáb
