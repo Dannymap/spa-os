@@ -226,13 +226,23 @@ export default function HomePage() {
       {/* ── Footer ── */}
       <footer style={{
         background: "#2c1a1a", color: "rgba(255,255,255,0.5)",
-        padding: "32px 24px", textAlign: "center", fontSize: 13,
+        padding: "36px 24px", textAlign: "center", fontSize: 13,
       }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 8 }}>
           <span style={{ fontSize: 16 }}>🌸</span>
           <span style={{ fontFamily: "var(--font-heading)", color: "rgba(255,255,255,0.8)", fontSize: 15 }}>Rose Nails</span>
         </div>
-        <p style={{ margin: 0 }}>© {new Date().getFullYear()} Rose Nails · Todos los derechos reservados</p>
+        <p style={{ margin: "0 0 20px" }}>© {new Date().getFullYear()} Rose Nails · Todos los derechos reservados</p>
+        <Link
+          href="/login"
+          style={{
+            fontSize: 11, color: "rgba(255,255,255,0.2)", letterSpacing: "0.12em",
+            textTransform: "uppercase", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.1)",
+            paddingBottom: 2, transition: "color 0.2s",
+          }}
+        >
+          Acceso administración
+        </Link>
       </footer>
 
     </div>
