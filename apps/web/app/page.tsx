@@ -1,106 +1,240 @@
 import Link from "next/link";
 
-const features = [
-  { icon: "📅", title: "Agenda completa", desc: "Gestiona tus citas día a día, cambia estados y cobra en un clic." },
-  { icon: "👤", title: "Ficha de clienta", desc: "Historial, preferencias, alergias y galería de fotos de cada trabajo." },
-  { icon: "📸", title: "Galería de trabajos", desc: "Sube fotos de cada servicio directamente en la ficha de tu clienta." },
-  { icon: "🌐", title: "Reserva online", desc: "Tus clientas reservan 24/7 desde Instagram, WhatsApp o QR." },
-  { icon: "💰", title: "Control de caja", desc: "Registra ingresos por método de pago al completar cada cita." },
-  { icon: "📊", title: "Balance financiero", desc: "Visualiza ingresos, gastos y beneficio neto por día, semana o mes." },
+const services = [
+  {
+    cat: "Manos",
+    icon: "💅",
+    items: ["Manicura clásica", "Semipermanente", "Uñas acrílicas", "Uñas gel", "Nail art"],
+  },
+  {
+    cat: "Pies",
+    icon: "🦶",
+    items: ["Pedicura clásica", "Semipermanente", "Pedicura spa", "Esmaltado"],
+  },
+  {
+    cat: "Cejas & Pestañas",
+    icon: "✨",
+    items: ["Depilación cejas", "Tinte cejas", "Laminado", "Extensiones", "Lifting"],
+  },
+  {
+    cat: "Packs especiales",
+    icon: "🎁",
+    items: ["Pack novia", "Pack cumpleaños", "Pack mamá e hija", "Pack relax total"],
+  },
 ];
 
-const services = [
-  { cat: "💅 Manos", items: ["Manicura clásica", "Semipermanente", "Uñas acrílicas", "Uñas gel"] },
-  { cat: "🦶 Pies", items: ["Pedicura clásica", "Semipermanente", "Pedicura spa"] },
-  { cat: "✨ Cejas", items: ["Depilación", "Tinte", "Laminado"] },
-  { cat: "👁️ Pestañas", items: ["Extensiones", "Lifting", "Relleno"] },
+const features = [
+  { icon: "🗓", title: "Reserva online 24/7", desc: "Elige tu servicio, fecha y hora desde cualquier dispositivo." },
+  { icon: "💌", title: "Confirmación inmediata", desc: "Recibe confirmación de tu cita al instante." },
+  { icon: "🌿", title: "Ambiente de lujo", desc: "Un espacio pensado para que te relajes y desconectes." },
+  { icon: "⭐", title: "Resultados impecables", desc: "Productos de primera calidad y técnicas exclusivas." },
 ];
 
 export default function HomePage() {
   return (
-    <div className="page-shell">
-      <header className="topbar">
-        <div className="brand">
-          <div className="brand-mark">S</div>
-          <div className="brand-copy">
-            <strong>SpaOS</strong>
-            <span>Tu spa de manos, pies y más</span>
-          </div>
-        </div>
-        <nav className="nav-links">
-          <Link href="/reservar">Reservar cita</Link>
-          <Link href="/agenda">Panel</Link>
-          <Link className="pill-button primary" href="/reservar">Reservar ahora</Link>
-        </nav>
-      </header>
+    <div style={{ fontFamily: "var(--font-body)", color: "var(--color-text)" }}>
 
-      <main style={{ fontFamily: "Georgia, serif" }}>
-        {/* Hero */}
-        <section style={{ textAlign: "center", padding: "80px 20px 60px", maxWidth: 700, margin: "0 auto" }}>
-          <div style={{ fontSize: 56, marginBottom: 16 }}>💅</div>
-          <h1 style={{ fontSize: "clamp(32px, 6vw, 52px)", color: "var(--color-accent)", lineHeight: 1.2, marginBottom: 16 }}>
-            Tu spa, organizado y siempre listo
-          </h1>
-          <p style={{ fontSize: 18, color: "#888", maxWidth: 500, margin: "0 auto 32px", lineHeight: 1.6 }}>
-            Gestiona citas, fichas de clientas, fotos de trabajos y tus finanzas — todo en un solo lugar.
-          </p>
-          <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/reservar" style={{ background: "var(--color-accent)", color: "#fff", padding: "14px 32px", borderRadius: 16, fontWeight: 700, textDecoration: "none", fontSize: 16 }}>
+      {/* ── Header ── */}
+      <header style={{
+        position: "sticky", top: 0, zIndex: 100,
+        background: "rgba(253,248,245,0.92)", backdropFilter: "blur(12px)",
+        borderBottom: "1px solid var(--color-line)",
+      }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 68 }}>
+          {/* Logo */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: "50%",
+              background: "linear-gradient(135deg, var(--color-accent), var(--color-deep))",
+              display: "grid", placeItems: "center", fontSize: 18,
+            }}>🌸</div>
+            <span style={{ fontFamily: "var(--font-heading)", fontSize: 20, color: "var(--color-deep)", fontWeight: 700, letterSpacing: "-0.3px" }}>
+              Rose Nails
+            </span>
+          </div>
+          {/* Nav */}
+          <nav style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <a href="#servicios" style={{ padding: "8px 16px", borderRadius: 999, fontSize: 14, fontWeight: 500, color: "var(--color-muted)" }}>
+              Servicios
+            </a>
+            <a href="#nosotros" style={{ padding: "8px 16px", borderRadius: 999, fontSize: 14, fontWeight: 500, color: "var(--color-muted)" }}>
+              Nosotros
+            </a>
+            <Link href="/reservar" style={{
+              padding: "10px 22px", borderRadius: 999,
+              background: "linear-gradient(135deg, var(--color-accent), var(--color-deep))",
+              color: "#fff", fontWeight: 600, fontSize: 14,
+            }}>
               Reservar cita
             </Link>
-            <Link href="/agenda" style={{ background: "var(--color-card)", color: "var(--color-text)", padding: "14px 32px", borderRadius: 16, fontWeight: 600, textDecoration: "none", fontSize: 16, border: "1.5px solid #e0d5cc" }}>
-              Panel de gestión →
+          </nav>
+        </div>
+      </header>
+
+      {/* ── Hero ── */}
+      <section style={{
+        background: "linear-gradient(160deg, #fdf8f5 0%, #f9ece8 50%, #fdf0ea 100%)",
+        padding: "100px 24px 90px",
+        textAlign: "center",
+      }}>
+        <div style={{ maxWidth: 700, margin: "0 auto" }}>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: 12, fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--color-accent)", marginBottom: 20 }}>
+            Manicura · Pedicura · Cejas · Pestañas
+          </p>
+          <h1 style={{
+            fontFamily: "var(--font-heading)", fontSize: "clamp(40px, 7vw, 72px)",
+            lineHeight: 1.08, color: "var(--color-deep)", margin: "0 0 24px",
+          }}>
+            El arte de cuidar<br />
+            <em style={{ fontStyle: "italic", color: "var(--color-accent)" }}>cada detalle</em>
+          </h1>
+          <p style={{ fontSize: 17, color: "var(--color-muted)", lineHeight: 1.7, marginBottom: 40, maxWidth: 520, margin: "0 auto 40px" }}>
+            En Rose Nails cada cita es una experiencia. Reserva online y llega a disfrutar.
+          </p>
+          <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
+            <Link href="/reservar" style={{
+              padding: "15px 36px", borderRadius: 999,
+              background: "linear-gradient(135deg, var(--color-accent), var(--color-deep))",
+              color: "#fff", fontWeight: 700, fontSize: 15, letterSpacing: "0.03em",
+              boxShadow: "0 8px 24px rgba(139,58,82,0.25)",
+            }}>
+              Reservar ahora
             </Link>
+            <a href="#servicios" style={{
+              padding: "15px 36px", borderRadius: 999,
+              border: "1.5px solid var(--color-line)",
+              background: "rgba(255,255,255,0.7)",
+              color: "var(--color-deep)", fontWeight: 600, fontSize: 15,
+            }}>
+              Ver servicios
+            </a>
           </div>
-        </section>
+        </div>
 
-        {/* Servicios */}
-        <section style={{ background: "var(--color-card)", padding: "56px 20px" }}>
-          <div style={{ maxWidth: 900, margin: "0 auto" }}>
-            <h2 style={{ textAlign: "center", fontSize: 28, marginBottom: 36, color: "var(--color-text)" }}>Nuestros servicios</h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 20 }}>
-              {services.map((s) => (
-                <div key={s.cat} style={{ background: "var(--color-bg)", borderRadius: 18, padding: "20px 22px" }}>
-                  <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 10, color: "var(--color-text)" }}>{s.cat}</div>
-                  <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
-                    {s.items.map((item) => (
-                      <li key={item} style={{ fontSize: 14, color: "#888" }}>· {item}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-            <div style={{ textAlign: "center", marginTop: 28 }}>
-              <Link href="/reservar" style={{ background: "var(--color-accent)", color: "#fff", padding: "12px 28px", borderRadius: 14, fontWeight: 700, textDecoration: "none", fontSize: 15 }}>
-                Ver todos los servicios y reservar
-              </Link>
-            </div>
+        {/* Floating badges */}
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 56, flexWrap: "wrap" }}>
+          {["✓ Sin esperas", "✓ Productos premium", "✓ Ambiente íntimo", "✓ Resultados duraderos"].map((b) => (
+            <span key={b} style={{
+              padding: "8px 16px", borderRadius: 999, background: "white",
+              border: "1px solid var(--color-line)", fontSize: 13, fontWeight: 500,
+              color: "var(--color-deep)", boxShadow: "0 2px 8px rgba(139,58,82,0.06)",
+            }}>
+              {b}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Servicios ── */}
+      <section id="servicios" style={{ padding: "90px 24px", background: "var(--color-bg)" }}>
+        <div style={{ maxWidth: 1060, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 56 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--color-accent)", marginBottom: 12 }}>
+              Lo que ofrecemos
+            </p>
+            <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "clamp(28px, 4vw, 44px)", color: "var(--color-deep)", margin: 0 }}>
+              Nuestros servicios
+            </h2>
           </div>
-        </section>
-
-        {/* Features */}
-        <section style={{ padding: "60px 20px", maxWidth: 960, margin: "0 auto" }}>
-          <h2 style={{ textAlign: "center", fontSize: 26, marginBottom: 36, color: "var(--color-text)" }}>Herramientas para gestionar tu negocio</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 20 }}>
-            {features.map((f) => (
-              <div key={f.title} style={{ background: "var(--color-card)", borderRadius: 18, padding: "24px 22px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-                <div style={{ fontSize: 32, marginBottom: 12 }}>{f.icon}</div>
-                <h3 style={{ margin: "0 0 8px", fontSize: 17, color: "var(--color-text)" }}>{f.title}</h3>
-                <p style={{ margin: 0, color: "#888", fontSize: 14, lineHeight: 1.5 }}>{f.desc}</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20 }}>
+            {services.map((s) => (
+              <div key={s.cat} style={{
+                background: "var(--color-card)", borderRadius: 22,
+                border: "1px solid var(--color-line)", padding: "28px 24px",
+                boxShadow: "0 2px 12px rgba(139,58,82,0.06)",
+              }}>
+                <div style={{ fontSize: 30, marginBottom: 14 }}>{s.icon}</div>
+                <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 18, margin: "0 0 14px", color: "var(--color-deep)" }}>
+                  {s.cat}
+                </h3>
+                <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 7 }}>
+                  {s.items.map((item) => (
+                    <li key={item} style={{ fontSize: 14, color: "var(--color-muted)", display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ color: "var(--color-accent)", fontSize: 10 }}>◆</span> {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>
-        </section>
+          <div style={{ textAlign: "center", marginTop: 44 }}>
+            <Link href="/reservar" style={{
+              padding: "13px 32px", borderRadius: 999,
+              background: "linear-gradient(135deg, var(--color-accent), var(--color-deep))",
+              color: "#fff", fontWeight: 600, fontSize: 15,
+              boxShadow: "0 6px 20px rgba(139,58,82,0.2)",
+            }}>
+              Reservar mi cita →
+            </Link>
+          </div>
+        </div>
+      </section>
 
-        {/* CTA final */}
-        <section style={{ background: "var(--color-accent)", padding: "56px 20px", textAlign: "center" }}>
-          <h2 style={{ color: "#fff", fontSize: 28, marginBottom: 12 }}>¿Listas para reservar?</h2>
-          <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 16, marginBottom: 28 }}>Elige tu servicio y tu horario preferido.</p>
-          <Link href="/reservar" style={{ background: "#fff", color: "var(--color-accent)", padding: "14px 36px", borderRadius: 16, fontWeight: 700, textDecoration: "none", fontSize: 16 }}>
-            Reservar ahora
-          </Link>
-        </section>
-      </main>
+      {/* ── Por qué elegirnos ── */}
+      <section id="nosotros" style={{ padding: "90px 24px", background: "linear-gradient(160deg, #f9ece8, var(--color-bg))" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 52 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--color-accent)", marginBottom: 12 }}>
+              Por qué elegirnos
+            </p>
+            <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "clamp(26px, 4vw, 40px)", color: "var(--color-deep)", margin: 0 }}>
+              Una experiencia diferente
+            </h2>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 20 }}>
+            {features.map((f) => (
+              <div key={f.title} style={{
+                background: "var(--color-card)", borderRadius: 20,
+                border: "1px solid var(--color-line)", padding: "28px 22px",
+                boxShadow: "0 2px 12px rgba(139,58,82,0.05)",
+              }}>
+                <div style={{ fontSize: 28, marginBottom: 14 }}>{f.icon}</div>
+                <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 16, margin: "0 0 8px", color: "var(--color-text)" }}>
+                  {f.title}
+                </h3>
+                <p style={{ margin: 0, color: "var(--color-muted)", fontSize: 14, lineHeight: 1.6 }}>{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section style={{
+        padding: "90px 24px", textAlign: "center",
+        background: "linear-gradient(135deg, var(--color-deep) 0%, #6b2240 100%)",
+      }}>
+        <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 14 }}>
+          Lista para mimarte
+        </p>
+        <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "clamp(28px, 4vw, 46px)", color: "#fff", margin: "0 0 16px", lineHeight: 1.15 }}>
+          Reserva tu cita hoy
+        </h2>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: 16, marginBottom: 36, maxWidth: 440, margin: "0 auto 36px" }}>
+          Elige tu servicio favorito y tu horario ideal. En 2 minutos todo está listo.
+        </p>
+        <Link href="/reservar" style={{
+          padding: "16px 44px", borderRadius: 999,
+          background: "#fff", color: "var(--color-deep)",
+          fontWeight: 700, fontSize: 16, letterSpacing: "0.02em",
+          boxShadow: "0 8px 28px rgba(0,0,0,0.2)",
+        }}>
+          Reservar ahora →
+        </Link>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer style={{
+        background: "#2c1a1a", color: "rgba(255,255,255,0.5)",
+        padding: "32px 24px", textAlign: "center", fontSize: 13,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 8 }}>
+          <span style={{ fontSize: 16 }}>🌸</span>
+          <span style={{ fontFamily: "var(--font-heading)", color: "rgba(255,255,255,0.8)", fontSize: 15 }}>Rose Nails</span>
+        </div>
+        <p style={{ margin: 0 }}>© {new Date().getFullYear()} Rose Nails · Todos los derechos reservados</p>
+      </footer>
+
     </div>
   );
 }
