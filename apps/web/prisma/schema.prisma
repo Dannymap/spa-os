@@ -77,6 +77,14 @@ model Income {
   createdAt DateTime @default(now())
 }
 
+model WorkSchedule {
+  id        String  @id @default(cuid())
+  dayOfWeek Int     @unique // 0=Dom, 1=Lun, 2=Mar, 3=Mié, 4=Jue, 5=Vie, 6=Sáb
+  isOpen    Boolean @default(false)
+  openTime  String  @default("09:00")
+  closeTime String  @default("19:00")
+}
+
 model Expense {
   id          String   @id @default(cuid())
   category    String   // productos, alquiler, servicios, equipo, publicidad, otros
