@@ -24,8 +24,11 @@ export default function FichaClientaPage() {
   const [form, setForm] = useState<Partial<Client>>({});
   const [uploading, setUploading] = useState(false);
   const [photoDesc, setPhotoDesc] = useState("");
+  const [mounted, setMounted] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const profileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { setMounted(true); }, []);
 
   async function load() {
     const res = await fetch(`/api/clients/${id}`);
@@ -76,7 +79,7 @@ export default function FichaClientaPage() {
     load();
   }
 
-  if (!client) return <DashboardShell title="Cargando..." description="" activePath="/clientas"><p>...</p></DashboardShell>;
+  if (!client || !mounted) return <DashboardShell title="Cargando..." description="" activePath="/clientas"><p style={{ color: "#aaa" }}>Cargando ficha...</p></DashboardShell>;
 
   const totalSpent = client.bookings.filter((b) => b.status === "completada").reduce((s, b) => s + b.price, 0);
 
