@@ -64,11 +64,11 @@ export default function BalancePage() {
       <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap", alignItems: "center" }}>
         {periods.map(({ key, label }) => (
           <button key={key} onClick={() => setPeriod(key)} style={{
-            padding: "8px 20px", borderRadius: 999, border: "none", cursor: "pointer",
+            padding: "8px 20px", borderRadius: 999, cursor: "pointer",
             background: period === key ? "linear-gradient(135deg, var(--color-accent), var(--color-deep))" : "var(--color-card)",
             color: period === key ? "#fff" : "var(--color-muted)",
             fontWeight: period === key ? 700 : 500, fontSize: 14, fontFamily: "var(--font-body)",
-            border: period === key ? "none" : "1.5px solid var(--color-line)" as unknown as undefined,
+            border: period === key ? "none" : "1.5px solid var(--color-line)",
           }}>{label}</button>
         ))}
 
