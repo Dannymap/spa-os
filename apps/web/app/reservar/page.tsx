@@ -306,10 +306,10 @@ export default function ReservarPage() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {([
-                { key: "name", label: "Tu nombre *", type: "text", required: true },
-                { key: "phone", label: "Teléfono / WhatsApp *", type: "tel", required: true },
-                { key: "email", label: "Email (opcional)", type: "email" },
-              ] as const).map(({ key, label, type, required }) => (
+                { key: "name" as const,  label: "Tu nombre *",           type: "text",  required: true },
+                { key: "phone" as const, label: "Teléfono / WhatsApp *", type: "tel",   required: true },
+                { key: "email" as const, label: "Email (opcional)",       type: "email", required: false },
+              ]).map(({ key, label, type, required }) => (
                 <div key={key}>
                   <label style={labelStyle}>{label}</label>
                   <input
