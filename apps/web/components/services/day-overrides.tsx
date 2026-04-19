@@ -18,6 +18,7 @@ function formatDate(dateStr: string) {
 
 export function DayOverrides() {
   const [overrides, setOverrides] = useState<Override[]>([]);
+  const [showForm, setShowForm] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
@@ -53,6 +54,7 @@ export function DayOverrides() {
     }
     setSaving(false);
     setSaved(true);
+    setShowForm(false);
     setSelectedDate("");
     setSelectedSlots([]);
     setEditingDate(null);
@@ -68,12 +70,21 @@ export function DayOverrides() {
     setEditingDate(o.date);
     setSelectedDate(o.date);
     setSelectedSlots(o.slots);
+    setShowForm(true);
   }
 
   function startNew() {
     setEditingDate(null);
     setSelectedDate("");
     setSelectedSlots([]);
+    setShowForm(true);
+  }
+
+  function cancelForm() {
+    setShowForm(false);
+    setSelectedDate("");
+    setSelectedSlots([]);
+    setEditingDate(null);
   }
 
   const today = new Date().toISOString().split("T")[0];
@@ -135,11 +146,11 @@ export function DayOverrides() {
 
       {/* ── Form ── */}
       <div style={{ borderTop: overrides.length ? "1px solid var(--color-line)" : "none", paddingTop: overrides.length ? 24 : 0 }}>
-        {!selectedDate && !editingDate && (
+        {!showForm && (
           <button onClick={startNew} style={btnPrimary}>+ Configurar un día específico</button>
         )}
 
-        {(selectedDate !== "" || editingDate !== null) && (
+        {showForm && (
           <div>
             <div style={{ marginBottom: 18 }}>
               <label style={labelStyle}>Fecha del día</label>
@@ -199,7 +210,7 @@ export function DayOverrides() {
                     {saving ? "Guardando..." : saved ? "✓ Guardado" : "Guardar horarios"}
                   </button>
                   <button
-                    onClick={() => { setSelectedDate(""); setSelectedSlots([]); setEditingDate(null); }}
+                    onClick={cancelForm}
                     style={btnSecondary}
                   >
                     Cancelar
