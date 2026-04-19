@@ -20,6 +20,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   pages: { signIn: "/login" },
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 3 * 60 * 60,    // 3 horas desde el último acceso
+    updateAge: 15 * 60,     // renueva el token cada 15 min si hay actividad
+  },
   trustHost: true,
 });
