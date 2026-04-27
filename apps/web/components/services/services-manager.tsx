@@ -9,6 +9,7 @@ type Service = {
   durationMinutes: number;
   price: number;
   description: string | null;
+  active: boolean;
 };
 
 const CATEGORIES = ["manos", "pies", "cejas", "pestanas", "depilacion", "packs", "otros"];
@@ -32,6 +33,7 @@ export function ServicesManager({ initialServices }: { initialServices: Service[
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   const [filterCat, setFilterCat] = useState<string>("todas");
 
   function openNew() {
@@ -82,6 +84,18 @@ export function ServicesManager({ initialServices }: { initialServices: Service[
     } finally {
       setSaving(false);
     }
+  }
+
+  async function handleToggleActive(s: Service) {
+    setTogglingId(s.id);
+    const res = await fetch(`/api/services/${s.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active: !s.active }),
+    });
+    const updated = await res.json();
+    setServices((prev) => prev.map((x) => (x.id === updated.id ? updated : x)));
+    setTogglingId(null);
   }
 
   async function handleDelete(id: string) {
@@ -148,15 +162,39 @@ export function ServicesManager({ initialServices }: { initialServices: Service[
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
             {list.map((s) => (
               <div key={s.id} style={{
-                background: "var(--color-card)", borderRadius: 18,
-                border: "1px solid var(--color-line)", padding: "20px 20px 16px",
-                boxShadow: "0 2px 10px rgba(139,58,82,0.05)",
+                background: s.active ? "var(--color-card)" : "#f9f9f9",
+                borderRadius: 18,
+                border: s.active ? "1px solid var(--color-line)" : "1px dashed #d0c8c8",
+                padding: "20px 20px 16px",
+                boxShadow: s.active ? "0 2px 10px rgba(139,58,82,0.05)" : "none",
+                opacity: s.active ? 1 : 0.65,
               }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-                  <h4 style={{ margin: 0, fontFamily: "var(--font-heading)", fontSize: 16, color: "var(--color-text)", lineHeight: 1.3 }}>
-                    {s.name}
-                  </h4>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1, minWidth: 0 }}>
+                    <h4 style={{ margin: 0, fontFamily: "var(--font-heading)", fontSize: 16, color: "var(--color-text)", lineHeight: 1.3 }}>
+                      {s.name}
+                    </h4>
+                    {!s.active && (
+                      <span style={{ flexShrink: 0, fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", background: "#e8e0e0", color: "#888", borderRadius: 6, padding: "2px 7px", textTransform: "uppercase" }}>
+                        Oculto
+                      </span>
+                    )}
+                  </div>
                   <div style={{ display: "flex", gap: 6, flexShrink: 0, marginLeft: 10 }}>
+                    <button
+                      onClick={() => handleToggleActive(s)}
+                      disabled={togglingId === s.id}
+                      title={s.active ? "Deshabilitar (ocultar a clientes)" : "Habilitar (mostrar a clientes)"}
+                      style={{
+                        background: s.active ? "#e8f5e9" : "var(--color-accent-soft)",
+                        border: "none", borderRadius: 8, padding: "5px 10px", fontSize: 12,
+                        cursor: "pointer",
+                        color: s.active ? "#2e7d32" : "var(--color-deep)",
+                        fontWeight: 600, fontFamily: "var(--font-body)",
+                      }}
+                    >
+                      {togglingId === s.id ? "..." : s.active ? "Visible" : "Oculto"}
+                    </button>
                     <button
                       onClick={() => openEdit(s)}
                       style={{ background: "var(--color-accent-soft)", border: "none", borderRadius: 8, padding: "5px 10px", fontSize: 12, cursor: "pointer", color: "var(--color-deep)", fontWeight: 600, fontFamily: "var(--font-body)" }}

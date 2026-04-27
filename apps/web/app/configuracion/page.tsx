@@ -8,7 +8,6 @@ export const dynamic = "force-dynamic";
 
 export default async function ConfigPage() {
   const services = await prisma.service.findMany({
-    where: { active: true },
     orderBy: [{ category: "asc" }, { name: "asc" }],
   });
 

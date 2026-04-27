@@ -1,27 +1,15 @@
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 
-const services = [
-  {
-    cat: "Manos",
-    icon: "💅",
-    items: ["Manicura clásica", "Semipermanente", "Uñas acrílicas", "Uñas gel", "Nail art"],
-  },
-  {
-    cat: "Pies",
-    icon: "🦶",
-    items: ["Pedicura clásica", "Semipermanente", "Pedicura spa", "Esmaltado"],
-  },
-  {
-    cat: "Cejas & Pestañas",
-    icon: "✨",
-    items: ["Depilación cejas", "Tinte cejas", "Laminado", "Extensiones", "Lifting"],
-  },
-  {
-    cat: "Packs especiales",
-    icon: "🎁",
-    items: ["Pack novia", "Pack cumpleaños", "Pack mamá e hija", "Pack relax total"],
-  },
-];
+const CATEGORY_META: Record<string, { label: string; icon: string }> = {
+  manos:      { label: "Manos",         icon: "💅" },
+  pies:       { label: "Pies",          icon: "🦶" },
+  cejas:      { label: "Cejas",         icon: "✨" },
+  pestanas:   { label: "Pestañas",      icon: "👁️" },
+  depilacion: { label: "Depilación",    icon: "🌸" },
+  packs:      { label: "Packs especiales", icon: "🎁" },
+  otros:      { label: "Otros",         icon: "💆" },
+};
 
 const features = [
   { icon: "🗓", title: "Reserva online 24/7", desc: "Elige tu servicio, fecha y hora desde cualquier dispositivo." },
@@ -30,7 +18,21 @@ const features = [
   { icon: "⭐", title: "Resultados impecables", desc: "Productos de primera calidad y técnicas exclusivas." },
 ];
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const activeServices = await prisma.service.findMany({
+    where: { active: true },
+    orderBy: [{ category: "asc" }, { name: "asc" }],
+    select: { id: true, name: true, category: true },
+  });
+
+  // Group by category, preserving order defined in CATEGORY_META
+  const grouped = Object.keys(CATEGORY_META).reduce<Record<string, string[]>>((acc, cat) => {
+    const names = activeServices.filter((s) => s.category === cat).map((s) => s.name);
+    if (names.length) acc[cat] = names;
+    return acc;
+  }, {});
   return (
     <div style={{ fontFamily: "var(--font-body)", color: "var(--color-text)" }}>
 
@@ -137,25 +139,28 @@ export default function HomePage() {
             </h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20 }}>
-            {services.map((s) => (
-              <div key={s.cat} style={{
-                background: "var(--color-card)", borderRadius: 22,
-                border: "1px solid var(--color-line)", padding: "28px 24px",
-                boxShadow: "0 2px 12px rgba(139,58,82,0.06)",
-              }}>
-                <div style={{ fontSize: 30, marginBottom: 14 }}>{s.icon}</div>
-                <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 18, margin: "0 0 14px", color: "var(--color-deep)" }}>
-                  {s.cat}
-                </h3>
-                <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 7 }}>
-                  {s.items.map((item) => (
-                    <li key={item} style={{ fontSize: 14, color: "var(--color-muted)", display: "flex", alignItems: "center", gap: 6 }}>
-                      <span style={{ color: "var(--color-accent)", fontSize: 10 }}>◆</span> {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+            {Object.entries(grouped).map(([cat, names]) => {
+              const meta = CATEGORY_META[cat];
+              return (
+                <div key={cat} style={{
+                  background: "var(--color-card)", borderRadius: 22,
+                  border: "1px solid var(--color-line)", padding: "28px 24px",
+                  boxShadow: "0 2px 12px rgba(139,58,82,0.06)",
+                }}>
+                  <div style={{ fontSize: 30, marginBottom: 14 }}>{meta.icon}</div>
+                  <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 18, margin: "0 0 14px", color: "var(--color-deep)" }}>
+                    {meta.label}
+                  </h3>
+                  <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 7 }}>
+                    {names.map((name) => (
+                      <li key={name} style={{ fontSize: 14, color: "var(--color-muted)", display: "flex", alignItems: "center", gap: 6 }}>
+                        <span style={{ color: "var(--color-accent)", fontSize: 10 }}>◆</span> {name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
           </div>
           <div style={{ textAlign: "center", marginTop: 44 }}>
             <Link href="/reservar" style={{

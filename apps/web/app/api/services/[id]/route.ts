@@ -7,11 +7,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const service = await prisma.service.update({
     where: { id },
     data: {
-      name: body.name,
-      category: body.category,
-      durationMinutes: body.durationMinutes,
-      price: body.price,
-      description: body.description ?? null,
+      ...(body.name !== undefined && { name: body.name }),
+      ...(body.category !== undefined && { category: body.category }),
+      ...(body.durationMinutes !== undefined && { durationMinutes: body.durationMinutes }),
+      ...(body.price !== undefined && { price: body.price }),
+      ...(body.description !== undefined && { description: body.description ?? null }),
+      ...(body.active !== undefined && { active: body.active }),
     },
   });
   return NextResponse.json(service);
