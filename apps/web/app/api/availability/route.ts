@@ -5,6 +5,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const dateStr = searchParams.get("date");       // "2026-04-20"
   const duration = Number(searchParams.get("duration") ?? 60);
+  const excludeId = searchParams.get("excludeId") ?? null;
 
   if (!dateStr) return NextResponse.json({ error: "date required" }, { status: 400 });
 
@@ -40,14 +41,18 @@ export async function GET(req: NextRequest) {
   const dayEnd   = new Date(dateStr + "T23:59:59.999Z");
 
   const bookings = await prisma.booking.findMany({
-    where: { date: { gte: dayStart, lte: dayEnd }, status: { not: "cancelada" } },
+    where: {
+      date: { gte: dayStart, lte: dayEnd },
+      status: { not: "cancelada" },
+      ...(excludeId ? { id: { not: excludeId } } : {}),
+    },
     include: { service: { select: { durationMinutes: true } } },
   });
 
   const blocked = new Set<number>();
   for (const b of bookings) {
     const d = new Date(b.date);
-    const bStart = d.getUTCHours() * 60 + d.getUTCMinutes();
+    const bStart = d.getHours() * 60 + d.getMinutes();
     for (let m = bStart; m < bStart + b.service.durationMinutes; m++) blocked.add(m);
   }
 

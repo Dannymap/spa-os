@@ -80,9 +80,7 @@ export default function ReservarPage() {
     });
     const client = await clientRes.json();
 
-    const [h, m] = selectedSlot.split(":").map(Number);
-    const dateTime = new Date(selectedDate + "T00:00:00.000Z");
-    dateTime.setUTCHours(h, m, 0, 0);
+    const dateTime = new Date(`${selectedDate}T${selectedSlot}:00`);
 
     await fetch("/api/bookings", {
       method: "POST",

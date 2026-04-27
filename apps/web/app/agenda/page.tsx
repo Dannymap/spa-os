@@ -60,7 +60,7 @@ export default function AgendaPage() {
     if (!reagendarBooking || !newDate) { setSlots([]); return; }
     setSlotsLoading(true);
     setSelectedSlot("");
-    fetch(`/api/availability?date=${newDate}&duration=${reagendarBooking.service.durationMinutes}`)
+    fetch(`/api/availability?date=${newDate}&duration=${reagendarBooking.service.durationMinutes}&excludeId=${reagendarBooking.id}`)
       .then((r) => r.json())
       .then((data) => { setSlots(data.slots ?? []); setSlotsLoading(false); });
   }, [newDate, reagendarBooking]);
@@ -79,9 +79,7 @@ export default function AgendaPage() {
   async function confirmReagendar() {
     if (!reagendarBooking || !newDate || !selectedSlot) return;
     setSaving(true);
-    const [h, m] = selectedSlot.split(":").map(Number);
-    const dt = new Date(newDate + "T00:00:00.000Z");
-    dt.setUTCHours(h, m, 0, 0);
+    const dt = new Date(`${newDate}T${selectedSlot}:00`);
     await fetch(`/api/bookings/${reagendarBooking.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
