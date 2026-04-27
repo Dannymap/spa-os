@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 
   const bookings = await prisma.booking.findMany({
     where: { ...dateFilter, ...(status ? { status } : {}) },
-    include: { client: true, service: true, photos: true },
+    include: { client: true, service: true, worker: true, photos: true },
     orderBy: { date: "asc" },
   });
   return NextResponse.json(bookings);
@@ -34,8 +34,9 @@ export async function POST(req: NextRequest) {
       status: body.status ?? "prevista",
       notes: body.notes,
       price: body.price,
+      ...(body.workerId ? { workerId: body.workerId } : {}),
     },
-    include: { client: true, service: true },
+    include: { client: true, service: true, worker: true },
   });
   return NextResponse.json(booking, { status: 201 });
 }

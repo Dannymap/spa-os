@@ -11,7 +11,10 @@ type Booking = {
   notes?: string;
   client: { id: string; name: string; phone?: string };
   service: { id: string; name: string; durationMinutes: number; category: string };
+  worker?: { id: string; name: string } | null;
 };
+type Service = { id: string; name: string; price: number; durationMinutes: number };
+type Worker  = { id: string; name: string };
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
   prevista:   { label: "Prevista",   color: "#b5771a" },
@@ -28,15 +31,16 @@ function addDays(base: string, n: number) {
   const d = new Date(base + "T12:00:00"); d.setDate(d.getDate() + n);
   return d.toISOString().split("T")[0];
 }
-function formatDayES(dateStr: string) {
-  return new Date(dateStr + "T12:00:00").toLocaleDateString("es-ES", { weekday: "short", day: "numeric", month: "short" });
-}
 
 export default function AgendaPage() {
   const [date, setDate] = useState(todayISO());
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
+
+  // Catalog data for edit modal
+  const [services, setServices] = useState<Service[]>([]);
+  const [workers,  setWorkers]  = useState<Worker[]>([]);
 
   // Reagendar modal state
   const [reagendarBooking, setReagendarBooking] = useState<Booking | null>(null);
@@ -45,6 +49,11 @@ export default function AgendaPage() {
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState("");
   const [saving, setSaving] = useState(false);
+
+  // Edit modal state
+  const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
+  const [editForm, setEditForm] = useState({ serviceId: "", workerId: "", price: "", notes: "" });
+  const [editSaving, setEditSaving] = useState(false);
 
   async function load(d: string) {
     setLoading(true);
@@ -55,12 +64,18 @@ export default function AgendaPage() {
 
   useEffect(() => { load(date); }, [date]);
 
+  useEffect(() => {
+    fetch("/api/services").then((r) => r.json()).then(setServices);
+    fetch("/api/workers").then((r) => r.json()).then(setWorkers);
+  }, []);
+
   // Load slots when reagendar date changes
   useEffect(() => {
     if (!reagendarBooking || !newDate) { setSlots([]); return; }
     setSlotsLoading(true);
     setSelectedSlot("");
-    fetch(`/api/availability?date=${newDate}&duration=${reagendarBooking.service.durationMinutes}&excludeId=${reagendarBooking.id}`)
+    const workerQ = reagendarBooking.worker?.id ? `&workerId=${reagendarBooking.worker.id}` : "";
+    fetch(`/api/availability?date=${newDate}&duration=${reagendarBooking.service.durationMinutes}&excludeId=${reagendarBooking.id}${workerQ}`)
       .then((r) => r.json())
       .then((data) => { setSlots(data.slots ?? []); setSlotsLoading(false); });
   }, [newDate, reagendarBooking]);
@@ -96,6 +111,34 @@ export default function AgendaPage() {
     setReagendarBooking(b);
     setNewDate(todayISO());
     setSelectedSlot("");
+  }
+
+  function openEdit(b: Booking) {
+    setEditingBooking(b);
+    setEditForm({
+      serviceId: b.service.id,
+      workerId:  b.worker?.id ?? "",
+      price:     String(b.price),
+      notes:     b.notes ?? "",
+    });
+  }
+
+  async function confirmEdit() {
+    if (!editingBooking) return;
+    setEditSaving(true);
+    await fetch(`/api/bookings/${editingBooking.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        serviceId: editForm.serviceId,
+        workerId:  editForm.workerId || null,
+        price:     parseFloat(editForm.price),
+        notes:     editForm.notes,
+      }),
+    });
+    setEditSaving(false);
+    setEditingBooking(null);
+    await load(date);
   }
 
   const completed = bookings.filter((b) => b.status === "completada");
@@ -161,6 +204,7 @@ export default function AgendaPage() {
                 <div style={{ flex: 1, minWidth: 160 }}>
                   <a href={`/clientas/${b.client.id}`} style={{ fontWeight: 700, fontSize: 16, color: "var(--color-text)", textDecoration: "none" }}>{b.client.name}</a>
                   <div style={{ fontSize: 13, color: "var(--color-muted)" }}>{b.service.name}</div>
+                  {b.worker && <div style={{ fontSize: 12, color: "var(--color-accent)", marginTop: 2, fontWeight: 600 }}>👤 {b.worker.name}</div>}
                   {b.notes && <div style={{ fontSize: 12, color: "var(--color-muted)", marginTop: 3 }}>📝 {b.notes}</div>}
                 </div>
 
@@ -184,6 +228,7 @@ export default function AgendaPage() {
                       <button onClick={() => changeStatus(b.id, "completada", "transferencia")} style={btn("#7c3aed")}>✓ Transfer.</button>
                     </>
                   )}
+                  <button onClick={() => openEdit(b)} style={btn("#7a6060")}>✏ Editar</button>
                   {canReschedule && (
                     <button onClick={() => openReagendar(b)} style={btn("#c9856a")}>📅 Reagendar</button>
                   )}
@@ -200,6 +245,90 @@ export default function AgendaPage() {
         </a>
       </div>
 
+      {/* ── Modal Editar ── */}
+      {editingBooking && (
+        <div
+          onClick={(e) => { if (e.target === e.currentTarget) setEditingBooking(null); }}
+          style={{ position: "fixed", inset: 0, background: "rgba(44,26,26,0.5)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 300, padding: 20 }}
+        >
+          <div style={{ background: "var(--color-card)", borderRadius: 24, padding: "32px 28px", width: "100%", maxWidth: 480, boxShadow: "0 20px 60px rgba(44,26,26,0.25)", border: "1px solid var(--color-line)" }}>
+            <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 22, color: "var(--color-deep)", margin: "0 0 6px" }}>Editar cita</h2>
+            <div style={{ background: "var(--color-accent-soft)", borderRadius: 12, padding: "10px 14px", marginBottom: 24, fontSize: 14 }}>
+              <strong>{editingBooking.client.name}</strong> · {fmt(editingBooking.date)}
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {/* Servicio */}
+              <div>
+                <label style={lbl}>Servicio</label>
+                <select
+                  value={editForm.serviceId}
+                  onChange={(e) => {
+                    const svc = services.find((s) => s.id === e.target.value);
+                    setEditForm((f) => ({ ...f, serviceId: e.target.value, price: svc ? String(svc.price) : f.price }));
+                  }}
+                  style={inp}
+                >
+                  {services.map((s) => (
+                    <option key={s.id} value={s.id}>{s.name} ({s.durationMinutes}min)</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Trabajadora */}
+              <div>
+                <label style={lbl}>Trabajadora</label>
+                <select value={editForm.workerId} onChange={(e) => setEditForm((f) => ({ ...f, workerId: e.target.value }))} style={inp}>
+                  <option value="">Sin asignar</option>
+                  {workers.map((w) => (
+                    <option key={w.id} value={w.id}>{w.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Precio */}
+              <div>
+                <label style={lbl}>Precio (€)</label>
+                <input
+                  type="number" step="0.01" min="0"
+                  value={editForm.price}
+                  onChange={(e) => setEditForm((f) => ({ ...f, price: e.target.value }))}
+                  style={inp}
+                />
+              </div>
+
+              {/* Notas */}
+              <div>
+                <label style={lbl}>Notas</label>
+                <textarea
+                  rows={3}
+                  value={editForm.notes}
+                  onChange={(e) => setEditForm((f) => ({ ...f, notes: e.target.value }))}
+                  placeholder="Indicaciones, preferencias..."
+                  style={{ ...inp, resize: "none" }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: 10, marginTop: 24 }}>
+              <button
+                onClick={confirmEdit}
+                disabled={editSaving}
+                style={{ flex: 2, padding: "13px", borderRadius: 12, border: "none", cursor: "pointer", background: "linear-gradient(135deg, var(--color-accent), var(--color-deep))", color: "#fff", fontWeight: 700, fontSize: 15, fontFamily: "var(--font-body)", opacity: editSaving ? 0.6 : 1 }}
+              >
+                {editSaving ? "Guardando..." : "✓ Guardar cambios"}
+              </button>
+              <button
+                onClick={() => setEditingBooking(null)}
+                style={{ flex: 1, padding: "13px", borderRadius: 12, border: "1px solid var(--color-line)", background: "white", cursor: "pointer", fontFamily: "var(--font-body)", fontWeight: 600, color: "var(--color-muted)" }}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Modal Reagendar ── */}
       {reagendarBooking && (
         <div
@@ -208,13 +337,11 @@ export default function AgendaPage() {
         >
           <div style={{ background: "var(--color-card)", borderRadius: 24, padding: "32px 28px", width: "100%", maxWidth: 520, boxShadow: "0 20px 60px rgba(44,26,26,0.25)", border: "1px solid var(--color-line)", maxHeight: "90vh", overflowY: "auto" }}>
 
-            {/* Header */}
             <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 22, color: "var(--color-deep)", margin: "0 0 6px" }}>Reagendar cita</h2>
             <div style={{ background: "var(--color-accent-soft)", borderRadius: 12, padding: "10px 14px", marginBottom: 24, fontSize: 14 }}>
               <strong>{reagendarBooking.client.name}</strong> · {reagendarBooking.service.name}
             </div>
 
-            {/* Date strip */}
             <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--color-muted)", margin: "0 0 10px" }}>Nuevo día</p>
             <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, marginBottom: 24 }}>
               {dateOptions.map((d) => {
@@ -237,7 +364,6 @@ export default function AgendaPage() {
               })}
             </div>
 
-            {/* Slots */}
             {newDate && (
               <>
                 <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--color-muted)", margin: "0 0 10px" }}>Nueva hora</p>
@@ -266,7 +392,6 @@ export default function AgendaPage() {
               </>
             )}
 
-            {/* Actions */}
             <div style={{ display: "flex", gap: 10 }}>
               <button
                 onClick={confirmReagendar}
@@ -292,3 +417,6 @@ export default function AgendaPage() {
 function btn(color: string): React.CSSProperties {
   return { background: color, color: "#fff", border: "none", borderRadius: 10, padding: "6px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-body)" };
 }
+
+const lbl: React.CSSProperties = { display: "block", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-muted)", marginBottom: 6 };
+const inp: React.CSSProperties = { width: "100%", padding: "10px 14px", borderRadius: 10, border: "1.5px solid var(--color-line)", background: "#fdf8f6", fontSize: 15, color: "var(--color-text)", boxSizing: "border-box", fontFamily: "var(--font-body)" };

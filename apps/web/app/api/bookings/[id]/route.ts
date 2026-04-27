@@ -7,12 +7,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const booking = await prisma.booking.update({
     where: { id },
     data: {
-      status: body.status,
-      notes: body.notes,
-      date: body.date ? new Date(body.date) : undefined,
-      price: body.price,
+      ...(body.status    !== undefined && { status: body.status }),
+      ...(body.notes     !== undefined && { notes: body.notes }),
+      ...(body.date      !== undefined && { date: new Date(body.date) }),
+      ...(body.price     !== undefined && { price: body.price }),
+      ...(body.workerId  !== undefined && { workerId: body.workerId || null }),
+      ...(body.serviceId !== undefined && { serviceId: body.serviceId }),
     },
-    include: { client: true, service: true },
+    include: { client: true, service: true, worker: true },
   });
 
   // Auto-register income when booking is marked as completed
